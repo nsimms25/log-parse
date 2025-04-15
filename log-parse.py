@@ -5,18 +5,10 @@ import re
 with open('log-files/Apache.log', 'r') as file:
     lines = file.readlines()
 
-df = pd.DataFrame(lines)
-line  = df.loc[0,0]
+regex_pattern = r'\[(?P<datetime>[^\]]+)\] \[(?P<type>\S+)\] \[client (?P<client>\S+)\] (?P<reason>\D+): \D+\n'
+parsed_lines = [re.match(regex_pattern, line).groupdict() for line in lines if re.match(regex_pattern, line)]
 
-regex_pattern = r'\[(?P<datetime>[^\]]+)\]'
-parsed_line = [re.match(regex_pattern, line).groupdict()]
+df = pd.DataFrame(parsed_lines)
 
-print(parsed_line[0]['datetime'])
-
-
-#for line in lines:
-#    if re.match(regex_pattern, line):
-#        parsed_data = re.match(regex_pattern, line)
-#line_datetime = re.match("+\w +\w +\d +\d:\d\d:\d\d +\d", line)
-
-#print(line)
+print(df.head())
+print(df[df.type == 'error'])
